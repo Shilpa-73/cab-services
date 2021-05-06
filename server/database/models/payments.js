@@ -1,63 +1,61 @@
-export function getAttributes(sequelize, DataTypes) {
-  return {
-    id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      primaryKey: true,
-      autoIncrement: true
-    },
-    bookingId: {
-      field: 'booking_id',
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'bookings',
-        key: 'id'
+const Sequelize = require('sequelize');
+module.exports = function(sequelize, DataTypes) {
+  return sequelize.define(
+    'payments',
+    {
+      id: {
+        autoIncrement: true,
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        primaryKey: true
+      },
+      booking_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'bookings',
+          key: 'id'
+        }
+      },
+      payment_mode: {
+        type: DataTypes.ENUM('CASH', 'CREDIT_CARD', 'DEBIT_CARD'),
+        allowNull: false,
+        defaultValue: 'CASH'
+      },
+      payment_meta: {
+        type: DataTypes.TEXT,
+        allowNull: true
+      },
+      payable_amount: {
+        type: DataTypes.DOUBLE,
+        allowNull: false
+      },
+      created_at: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        defaultValue: Sequelize.Sequelize.fn('now')
+      },
+      updated_at: {
+        type: DataTypes.DATE,
+        allowNull: true
+      },
+      deleted_at: {
+        type: DataTypes.DATE,
+        allowNull: true
       }
     },
-    paymentMode: {
-      field: 'payment_mode',
-      type: DataTypes.ENUM([1, 2,3]), //1:Cash,2:Credit Card,3:Debit Card
-      allowNull: false,
-    },
-    paymentMeta:{  //All extra fields related to payments will get stored here!, JSON to text document
-      field: 'payment_meta',
-      type: DataTypes.TEXT,
-      allowNull: false,
-    },
-    payableAmount:{
-      field: 'payable_amount',
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    createdAt: {
-      field: 'created_at',
-      type: DataTypes.DATE,
-      allowNull: true,
-      defaultValue: sequelize.fn('now')
-    },
-    updatedAt: {
-      field: 'updated_at',
-      type: DataTypes.DATE,
-      allowNull: true
-    },
-    deletedAt: {
-      field: 'deleted_at',
-      type: DataTypes.DATE,
-      allowNull: true
+    {
+      sequelize,
+      tableName: 'payments',
+      schema: 'public',
+      timestamps: false,
+      indexes: [
+        {
+          name: 'payments_pkey',
+          unique: true,
+          fields: [{ name: 'id' }]
+        }
+      ]
     }
-  };
-}
-
-export function model(sequelize, DataTypes) {
-  const payments = sequelize.define('payments', getAttributes(sequelize, DataTypes), {
-    tableName: 'payments',
-    paranoid: true,
-    timestamps: true
-  });
-
-  payments.associate = function(models) {
-
-  };
-  return payments;
-}
+  );
+};

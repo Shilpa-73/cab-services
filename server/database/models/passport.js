@@ -1,65 +1,67 @@
-export function getAttributes(sequelize, DataTypes) {
-  return {
-    id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      primaryKey: true,
-      autoIncrement: true
-    },
-    passportType: {
-      field: 'passport_type',
-      type: DataTypes.ENUM(["GOOGLE","GITHUB","LOCAL"]),
-      allowNull: false,
-      defaultValue:"LOCAL"
-    },
-    password: {
-      type: DataTypes.TEXT,
-      allowNull: false
-    },
-    serviceProviderId:{ //In case of Provider except LOCAL
-      type: DataTypes.TEXT,
-      allowNull: true
-    },
-    userId:{
-      field:'user_id',
-      allowNull:false,
-      references: {
-        model: 'users',
-        key: 'id'
+const Sequelize = require('sequelize');
+module.exports = function(sequelize, DataTypes) {
+  return sequelize.define(
+    'passport',
+    {
+      id: {
+        autoIncrement: true,
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        primaryKey: true
+      },
+      user_type: {
+        type: DataTypes.ENUM('CUSTOMER', 'DRIVER'),
+        allowNull: false,
+        defaultValue: 'CUSTOMER'
+      },
+      provider_type: {
+        type: DataTypes.ENUM('GOOGLE', 'GITHUB', 'LOCAL'),
+        allowNull: false,
+        defaultValue: 'GOOGLE'
+      },
+      password: {
+        type: DataTypes.TEXT,
+        allowNull: false
+      },
+      service_provider_id: {
+        type: DataTypes.TEXT,
+        allowNull: true
+      },
+      user_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+      },
+      created_at: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        defaultValue: Sequelize.Sequelize.fn('now')
+      },
+      updated_at: {
+        type: DataTypes.DATE,
+        allowNull: true
+      },
+      deleted_at: {
+        type: DataTypes.DATE,
+        allowNull: true
       }
     },
-    createdAt: {
-      field: 'created_at',
-      type: DataTypes.DATE,
-      allowNull: true,
-      defaultValue: sequelize.fn('now')
-    },
-    updatedAt: {
-      field: 'updated_at',
-      type: DataTypes.DATE,
-      allowNull: true
-    },
-    deletedAt: {
-      field: 'deleted_at',
-      type: DataTypes.DATE,
-      allowNull: true
+    {
+      sequelize,
+      tableName: 'passport',
+      schema: 'public',
+      timestamps: false,
+      indexes: [
+        {
+          name: 'passport_pkey',
+          unique: true,
+          fields: [{ name: 'id' }]
+        },
+        {
+          name: 'passport_user_type',
+          unique: true,
+          fields: [{ name: 'user_type' }, { name: 'user_id' }, { name: 'provider_type' }]
+        }
+      ]
     }
-  };
-}
-
-export function model(sequelize, DataTypes) {
-  const passport = sequelize.define('passport', getAttributes(sequelize, DataTypes), {
-    tableName: 'passport',
-    paranoid: true,
-    timestamps: true
-  });
-
-  passport.associate = function(models) {
-    passport.belongsTo(models.users, {
-      sourceKey: 'id',
-      targetKey:'user_id'
-    });
-  };
-
-  return passport;
-}
+  );
+};

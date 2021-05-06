@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize');
 module.exports = function(sequelize, DataTypes) {
   return sequelize.define(
-    'drivers',
+    'cab_stations',
     {
       id: {
         autoIncrement: true,
@@ -9,28 +9,16 @@ module.exports = function(sequelize, DataTypes) {
         allowNull: false,
         primaryKey: true
       },
-      first_name: {
-        type: DataTypes.STRING(20),
-        allowNull: false
-      },
-      last_name: {
-        type: DataTypes.STRING(20),
-        allowNull: false
-      },
-      mobile_no: {
-        type: DataTypes.STRING(20),
-        allowNull: false
-      },
-      email: {
+      name: {
         type: DataTypes.TEXT,
-        allowNull: true
+        allowNull: false
       },
-      birth_date: {
-        type: DataTypes.DATE,
-        allowNull: true
+      lat: {
+        type: DataTypes.DOUBLE,
+        allowNull: false
       },
-      address: {
-        type: DataTypes.TEXT,
+      long: {
+        type: DataTypes.DOUBLE,
         allowNull: false
       },
       city: {
@@ -45,14 +33,9 @@ module.exports = function(sequelize, DataTypes) {
         type: DataTypes.TEXT,
         allowNull: false
       },
-      driving_license_number: {
+      address: {
         type: DataTypes.TEXT,
         allowNull: false
-      },
-      active: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-        defaultValue: true
       },
       created_at: {
         type: DataTypes.DATE,
@@ -70,16 +53,12 @@ module.exports = function(sequelize, DataTypes) {
     },
     {
       sequelize,
-      tableName: 'drivers',
+      tableName: 'cab_stations',
       schema: 'public',
       timestamps: false,
       indexes: [
         {
-          name: 'drivers_email',
-          fields: [{ name: 'email' }]
-        },
-        {
-          name: 'drivers_pkey',
+          name: 'cab_stations_pkey',
           unique: true,
           fields: [{ name: 'id' }]
         }
